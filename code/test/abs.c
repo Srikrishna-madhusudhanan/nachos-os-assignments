@@ -9,13 +9,24 @@
 
 int main() {
     int result;
-
+/*
     int x = -23;
     result = Abs(x);
 
     PrintNum(result);
     PrintString("\n");
+*/
+    int i, j;
+    for(i=0; i<10; i++)
+    {
+	    for(j=0; j<20; j++)
+	    {
+		    PrintString("Abs");
+		    PrintString("\n");
+	    }
+    }
 
-    Halt();
+
+    //Halt();
     /* not reached */
 }

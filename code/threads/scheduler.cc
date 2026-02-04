@@ -31,19 +31,19 @@
 //----------------------------------------------------------------------
 
 int compare(Thread* x, Thread* y){
-        printf("Priorities: x: %d, y: %d", x->priority, y->priority);
+        //printf("Priorities: x: %d, y: %d", x->priority, y->priority);
         if (x->priority > y->priority)
         {
-                printf(" I choose x\n");
+                //printf(" I choose x\n");
                 return -1;
         }
         if (x->priority < y->priority)
         {
-                printf(" I choose y\n");
+               // printf(" I choose y\n");
                 return 1;
         }
         else{
-                printf("Both are equal!\n");
+                //printf("Both are equal!\n");
                 return 0;
         }
 }

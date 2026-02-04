@@ -9,8 +9,10 @@
 int main() {
     int pid;
     int pid2;
+    int pid3;
     pid = Exec2("../test/mul", 9);
     pid2 = Exec2("../test/add", 5);
+    pid3 = Exec2("../test/abs", 12);
     if (pid < 0) {
         Write("Exec failed: ", 14, stdout);
         PrintNum(pid);
@@ -28,6 +30,7 @@ int main() {
 	}
        Join(pid);
        Join(pid2);
+       Join(pid3);
        
     }
 }
