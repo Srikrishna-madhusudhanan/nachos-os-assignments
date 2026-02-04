@@ -21,6 +21,8 @@
 #include "switch.h"
 #include "synch.h"
 #include "sysdep.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 // this is put at the top of the execution stack, for detecting stack overflows
 const int STACK_FENCEPOST = 0xdedbeef;
@@ -46,6 +48,8 @@ Thread::Thread(char *threadName, bool _has_dynamic_name /*=false*/) {
     }
     space = NULL;
 
+    priority = rand()%5; // priority for the scheduler
+    printf("Created thread %s with priority %d",threadName,priority);
 }
 
 //----------------------------------------------------------------------

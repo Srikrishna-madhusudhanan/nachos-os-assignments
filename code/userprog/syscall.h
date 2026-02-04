@@ -51,6 +51,8 @@
 // inserted on 21 January 2026, 1st OS Lab
 #define SC_Abs 55
 #define SC_Mul 56
+// inserted for Assignment 2, to handle priorities
+#define SC_Exec2 57
 
 #ifndef IN_ASM
 
@@ -111,6 +113,10 @@ SpaceId Exec(char *exec_name);
  * parameters stored in argv[1..argc-1] and return the
  * address space identifier
  */
+
+// Inserted to give user-defined priorities to threads
+SpaceId Exec2(char *exec_name, int priority);
+
 SpaceId ExecV(int argc, char *argv[]);
 
 /* Only return once the user program "id" has finished.

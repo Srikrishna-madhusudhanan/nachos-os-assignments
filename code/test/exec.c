@@ -8,7 +8,9 @@
 
 int main() {
     int pid;
-    pid = Exec("../test/add");
+    int pid2;
+    pid = Exec2("../test/mul", 9);
+    pid2 = Exec2("../test/add", 5);
     if (pid < 0) {
         Write("Exec failed: ", 14, stdout);
         PrintNum(pid);
@@ -24,6 +26,7 @@ int main() {
 		}	
 
 	}
+       Join(pid);
        Join(pid);
        
     }

@@ -17,8 +17,7 @@ int main() {
     {
 	    for(j=0; j<20000; j++)
 	    {
-		    PrintString("Child iteration ");
-		    PrintNum(i);
+		    PrintString("Child");
 		    PrintString("\n");
 	    }
     }

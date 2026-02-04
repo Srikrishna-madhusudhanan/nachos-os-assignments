@@ -210,6 +210,22 @@ int SysExec(char* name) {
     return kernel->pTab->ExecUpdate(name);
 }
 
+// to handle priorities
+int SysExec2(char* name, int priority) {
+    // cerr << "call: `" << name  << "`"<< endl;
+    OpenFile* oFile = kernel->fileSystem->Open(name);
+    if (oFile == NULL) {
+        DEBUG(dbgSys, "\nExec:: Can't open this file.");
+        return -1;
+    }
+
+    delete oFile;
+
+    // Return child process id
+    return kernel->pTab->ExecUpdate2(name, priority);
+}
+
+
 int SysJoin(int id) { return kernel->pTab->JoinUpdate(id); }
 
 int SysExit(int id) { return kernel->pTab->ExitUpdate(id); }

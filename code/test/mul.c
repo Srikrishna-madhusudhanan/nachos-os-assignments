@@ -10,9 +10,21 @@
 int main() {
     int result;
 
-    result = Mul(42, 2);
-    PrintNum(result);
-    PrintString("\n"); 
+    //result = Mul(42, 2);
+    //PrintNum(result);
+    //PrintString("\n"); 
+
+    int i, j;
+    for(i=0; i<10000; i++)
+    {
+	    for(j=0; j<20000; j++)
+	    {
+		    PrintString("Baby");
+		    PrintString("\n");
+	    }
+    }
+
+
 
     Halt();
     /* not reached */

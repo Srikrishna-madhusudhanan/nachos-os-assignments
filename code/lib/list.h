@@ -101,7 +101,7 @@ class SortedList : public List<T> {
     void SelfTest(T *p, int numEntries);
     // verify module is working
 
-   private:
+   //private:
     int (*compare)(T x, T y);  // function for sorting list elements
 
     void Prepend(T item) {
