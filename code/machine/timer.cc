@@ -64,7 +64,7 @@ void Timer::CallBack() {
 //----------------------------------------------------------------------
 
 void Timer::SetInterrupt() {
-    if (false && !disable) {
+    if (!disable) {
         int delay = TimerTicks;
 
         if (randomize) {

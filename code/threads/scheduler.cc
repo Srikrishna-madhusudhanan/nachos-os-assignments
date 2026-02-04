@@ -35,12 +35,12 @@ int compare(Thread* x, Thread* y){
         if (x->priority > y->priority)
         {
                 printf(" I choose x\n");
-                return 1;
+                return -1;
         }
         if (x->priority < y->priority)
         {
                 printf(" I choose y\n");
-                return -1;
+                return 1;
         }
         else{
                 printf("Both are equal!\n");
