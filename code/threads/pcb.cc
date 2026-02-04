@@ -83,7 +83,7 @@ int PCB::Exec2(char* filename, int id, int priority) {
     // cerr << filename << ' ' << pid << endl;
     multex->P();
 
-    this->thread = new Thread(filename, true);
+    this->thread = new Thread(filename, true, priority);
     if (this->thread == NULL) {
         printf("\nPCB::Exec: Not enough memory!\n");
         multex->V();  // Nha CPU de nhuong CPU cho tien trinh khac
@@ -92,7 +92,7 @@ int PCB::Exec2(char* filename, int id, int priority) {
 
     //  Đặt processID của thread này là id.
     this->thread->processID = id;
-    this->thread->priority = priority; // for priority scheduler
+    //this->thread->priority = priority; // for priority scheduler
     // Đặt parrentID của thread này là processID của thread gọi thực thi Exec
     this->parentID = kernel->currentThread->processID;
     // Gọi thực thi Fork(StartProcess_2,id) => Ta cast thread thành kiểu int,

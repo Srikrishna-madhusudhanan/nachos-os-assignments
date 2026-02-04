@@ -16,9 +16,9 @@ int main() {
         PrintNum(pid);
     } else{
 	int i, j;
-	for(i=0; i<10000; i++)
+	for(i=0; i<10; i++)
 	{
-		for (j=0; j< 2000000; j++)
+		for (j=0; j< 2; j++)
 		{
 		PrintString("Parent iteration ");
 		PrintNum(i);
@@ -27,7 +27,7 @@ int main() {
 
 	}
        Join(pid);
-       Join(pid);
+       Join(pid2);
        
     }
 }

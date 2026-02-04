@@ -13,16 +13,15 @@ int main() {
     // result = Add(42, 23);
 
     int i, j;
-    for(i=0; i<10000; i++)
+    for(i=0; i<10; i++)
     {
-	    for(j=0; j<20000; j++)
+	    for(j=0; j<20; j++)
 	    {
-		    PrintString("Child");
+		    PrintString("Add");
 		    PrintString("\n");
 	    }
     }
 
 
-    Halt();
     /* not reached */
 }

@@ -15,17 +15,17 @@ int main() {
     //PrintString("\n"); 
 
     int i, j;
-    for(i=0; i<10000; i++)
+    for(i=0; i<10; i++)
     {
-	    for(j=0; j<20000; j++)
+	    for(j=0; j<20; j++)
 	    {
-		    PrintString("Baby");
+		    PrintString("Mul");
 		    PrintString("\n");
 	    }
     }
 
 
 
-    Halt();
+    //Halt();
     /* not reached */
 }

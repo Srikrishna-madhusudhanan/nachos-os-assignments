@@ -35,8 +35,8 @@ const int STACK_FENCEPOST = 0xdedbeef;
 //	"threadName" is an arbitrary string, useful for debugging.
 //----------------------------------------------------------------------
 
-Thread::Thread(char *threadName, bool _has_dynamic_name /*=false*/) {
-    has_dynamic_name = _has_dynamic_name;
+//Thread::Thread(char *threadName, bool _has_dynamic_name /*=false*/) {
+  /*  has_dynamic_name = _has_dynamic_name;
     name = threadName;
     stackTop = NULL;
     stack = NULL;
@@ -51,6 +51,27 @@ Thread::Thread(char *threadName, bool _has_dynamic_name /*=false*/) {
     priority = rand()%5; // priority for the scheduler
     printf("Created thread %s with priority %d",threadName,priority);
 }
+*/
+
+Thread::Thread(char *threadName, bool _has_dynamic_name /*=false*/, int priority_num) {
+    has_dynamic_name = _has_dynamic_name;
+    name = threadName;
+    stackTop = NULL;
+    stack = NULL;
+    status = JUST_CREATED;
+    for (int i = 0; i < MachineStateSize; i++) {
+        machineState[i] = NULL;  // not strictly necessary, since
+                                 // new thread ignores contents
+                                 // of machine registers
+    }
+    space = NULL;
+
+    priority = priority_num; // priority for the scheduler
+    printf("\nCreated thread %s with priority %d\n",threadName,priority);
+}
+
+
+
 
 //----------------------------------------------------------------------
 // Thread::~Thread
