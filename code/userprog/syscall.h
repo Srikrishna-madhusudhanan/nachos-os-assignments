@@ -53,6 +53,7 @@
 #define SC_Mul 56
 // inserted for Assignment 2, to handle priorities
 #define SC_Exec2 57
+#define SC_ExecPipe 58
 
 #ifndef IN_ASM
 
@@ -116,6 +117,10 @@ SpaceId Exec(char *exec_name);
 
 // Inserted to give user-defined priorities to threads
 SpaceId Exec2(char *exec_name, int priority);
+
+// Used for pipe commands cmd1 | cmd2, cmd1 program writes to a file and cmd2 reads from it
+SpaceId ExecPipe(char *exec_name, char *filename, int role);
+
 
 SpaceId ExecV(int argc, char *argv[]);
 

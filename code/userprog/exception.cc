@@ -369,6 +369,31 @@ void handle_SC_Exec2() {
     return move_program_counter();
 }
 
+void handle_SC_ExecPipe() {
+    int virtAddr;
+    virtAddr = kernel->machine->ReadRegister(
+        4);  // doc dia chi ten chuong trinh tu thanh ghi r4
+    char* name;
+    name = stringUser2System(virtAddr);  // Lay ten chuong trinh, nap vao kernel
+   
+    char* filename = kernel->machine->ReadRegister(5);
+
+    int role = kernel->machine->ReadRegister(6);
+
+    if (name == NULL) {
+        DEBUG(dbgSys, "\n Not enough memory in System");
+        ASSERT(false);
+        kernel->machine->WriteRegister(2, -1);
+        return move_program_counter();
+    }
+
+    kernel->machine->WriteRegister(2, SysExecPipe(name, filename, role));
+    // DO NOT DELETE NAME, THE THEARD WILL DELETE IT LATER
+    // delete[] name;
+
+    return move_program_counter();
+}
+
 
 
 /**
@@ -525,6 +550,8 @@ void ExceptionHandler(ExceptionType which) {
 		    return handle_SC_Mul();
 		case SC_Exec2:
 		    return handle_SC_Exec2();
+		case SC_ExecPipe:
+		    return handle_SC_ExecPipe();
                 /**
                  * Handle all not implemented syscalls
                  * If you want to write a new handler for syscall:

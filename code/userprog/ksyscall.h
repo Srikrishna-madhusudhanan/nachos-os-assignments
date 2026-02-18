@@ -225,6 +225,20 @@ int SysExec2(char* name, int priority) {
     return kernel->pTab->ExecUpdate2(name, priority);
 }
 
+int SysExecPipe(char* name, char* filename, int role) {
+    // cerr << "call: `" << name  << "`"<< endl;
+    OpenFile* oFile = kernel->fileSystem->Open(name);
+    if (oFile == NULL) {
+        DEBUG(dbgSys, "\nExec:: Can't open this file.");
+        return -1;
+    }
+
+    delete oFile;
+
+    // Return child process id
+    return kernel->pTab->ExecUpdate(name);
+}
+
 
 int SysJoin(int id) { return kernel->pTab->JoinUpdate(id); }
 
