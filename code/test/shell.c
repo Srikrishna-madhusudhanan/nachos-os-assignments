@@ -19,6 +19,7 @@ void getcmd2(char buffer[], char arg2[], int pipeloc, int endindex)
 	{
 		arg2[i++] = buffer[j];
 	}
+	arg2[i] = '\0';
 }
 
 int main() {
