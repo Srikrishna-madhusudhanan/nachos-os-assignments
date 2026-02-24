@@ -377,9 +377,11 @@ void handle_SC_ExecPipe() {
     char* name;
     name = stringUser2System(virtAddr);  // Lay ten chuong trinh, nap vao kernel
    
-    char* filename = kernel->machine->ReadRegister(5);
+    int file = kernel->machine->ReadRegister(5);
 
     int role = kernel->machine->ReadRegister(6);
+    char* filename;
+    filename = stringUser2System(file);
 
     if (name == NULL) {
         DEBUG(dbgSys, "\n Not enough memory in System");
