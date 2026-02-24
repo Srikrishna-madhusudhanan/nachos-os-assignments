@@ -53,6 +53,8 @@
 #define SC_Mul 56
 // inserted for Assignment 2, to handle priorities
 #define SC_Exec2 57
+// inserted for assignment-3, custom sleep function
+#define SC_Sleep2 58
 
 #ifndef IN_ASM
 
@@ -78,6 +80,9 @@ int Add(int op1, int op2);
 unsigned int Abs(int x);
 
 int Mul(int op1, int op2);
+
+//custom sleep function added for assignment-3
+void Sleep2(int seconds);
 
 int ReadNum();
 

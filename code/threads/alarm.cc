@@ -20,7 +20,11 @@
 //		occur at random, instead of fixed, intervals.
 //----------------------------------------------------------------------
 
-Alarm::Alarm(bool doRandom) { timer = new Timer(doRandom, this); }
+Alarm::Alarm(bool doRandom) { 
+	timer = new Timer(doRandom, this);
+	//added for assignment-3 sleep2 function
+	sleepList = new List<SleepEntry*>();
+}
 
 //----------------------------------------------------------------------
 // Alarm::CallBack
@@ -40,9 +44,47 @@ Alarm::Alarm(bool doRandom) { timer = new Timer(doRandom, this); }
 //      if we're currently running something (in other words, not idle).
 //----------------------------------------------------------------------
 
+//added for assignment-3 sleep2 function
+void Alarm::WaitUntil(int x){
+    //disable interrupts	
+    IntStatus oldLevel = kernel->interrupt->SetLevel(IntOff);
+
+    SleepEntry *entry = new SleepEntry;
+    entry->thread = kernel->currentThread;
+    entry->wakeTime = kernel->stats->totalTicks + x;
+
+    sleepList->Append(entry);
+
+    kernel->currentThread->Sleep(false); 
+    //just temporarily sleeping, thread is not finished so I gave false as input
+    //re-enable interrupts
+    kernel->interrupt->SetLevel(oldLevel);
+}
+
 void Alarm::CallBack() {
     Interrupt *interrupt = kernel->interrupt;
     MachineStatus status = interrupt->getStatus();
+
+    //updated CallBack for assignment-3, custom sleep2 function
+    //disable interrupts
+    IntStatus oldLevel = interrupt->SetLevel(IntOff);
+
+    int now = kernel->stats->totalTicks;
+
+    ListIterator<SleepEntry*> it(sleepList);
+    while (!it.IsDone()) {
+        SleepEntry *entry = it.Item();
+	it.Next();
+
+        if (entry->wakeTime <= now) {
+            sleepList->Remove(entry);
+	    kernel->scheduler->ReadyToRun(entry->thread);   // move to ready queue
+            delete entry;
+        }
+        
+    }
+    //re-enable interrupts
+    interrupt->SetLevel(oldLevel);
 
     if (status != IdleMode) {
         interrupt->YieldOnReturn();

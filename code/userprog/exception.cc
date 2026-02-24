@@ -369,6 +369,20 @@ void handle_SC_Exec2() {
     return move_program_counter();
 }
 
+//added for assignment-3, custom sleep function
+void handle_SC_Sleep2(){
+	int seconds = kernel->machine->ReadRegister(4);
+
+	int ticks = (seconds * 1000 - 3800);
+
+	kernel->alarm->WaitUntil(ticks);
+
+	//advance PC
+	kernel->machine->WriteRegister(PrevPCReg, kernel->machine->ReadRegister(PCReg));
+    	kernel->machine->WriteRegister(PCReg, kernel->machine->ReadRegister(NextPCReg));
+    	kernel->machine->WriteRegister(NextPCReg, kernel->machine->ReadRegister(NextPCReg) + 4);
+  	return;
+}
 
 
 /**
@@ -525,6 +539,8 @@ void ExceptionHandler(ExceptionType which) {
 		    return handle_SC_Mul();
 		case SC_Exec2:
 		    return handle_SC_Exec2();
+		case SC_Sleep2:
+		    return handle_SC_Sleep2();
                 /**
                  * Handle all not implemented syscalls
                  * If you want to write a new handler for syscall:
