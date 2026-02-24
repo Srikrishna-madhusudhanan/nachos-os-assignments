@@ -27,7 +27,8 @@ ifeq ($(osname),Linux)
 CPP = /usr/local/nachos/lib/gcc-lib/decstation-ultrix/2.95.2/cpp
 
 
-# directory in which your gcc cross-compiler lives i.e.:
+
+# directory in which your gcc cross-compiler lives i.e.: 
 #clg
 #GCCDIR = /home/usr/local/nachos/bin/decstation-ultrix-
 
