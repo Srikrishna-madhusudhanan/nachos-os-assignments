@@ -8,6 +8,7 @@ void getcmd1(char buffer[], char arg1[], int pipeloc)
 	{
 		arg1[i] = buffer[i];
 	}
+	arg1[i] = '\0';
 }
 
 void getcmd2(char buffer[], char arg2[], int pipeloc, int endindex)
