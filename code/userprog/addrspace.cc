@@ -76,6 +76,9 @@ AddrSpace::AddrSpace() {
 
     // // zero out the entire address space
     // bzero(kernel->machine->mainMemory, MemorySize);
+    //added for assignment-4 pipe command
+    pipeRole = 0;
+    pipeOpenFile = NULL;
 }
 
 //----------------------------------------------------------------------

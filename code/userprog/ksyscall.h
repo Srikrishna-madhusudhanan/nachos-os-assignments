@@ -225,6 +225,7 @@ int SysExec2(char* name, int priority) {
     return kernel->pTab->ExecUpdate2(name, priority);
 }
 
+//added for assignment-4 pipe function
 int SysExecPipe(char* name, char* filename, int role) {
     // cerr << "call: `" << name  << "`"<< endl;
     OpenFile* oFile = kernel->fileSystem->Open(name);
@@ -235,8 +236,20 @@ int SysExecPipe(char* name, char* filename, int role) {
 
     delete oFile;
 
+    //check/create pipe file
+    OpenFile* pipeFile = kernel->fileSystem->Open(filename);
+    if (pipeFile == NULL) {
+        // create if not exists
+        if (!kernel->fileSystem->Create(filename, 0)) {
+            DEBUG(dbgSys, "\nExecPipe: Can't create pipe file.");
+            return -1;
+        }
+    } else {
+        delete pipeFile;
+    }
+
     // Return child process id
-    return kernel->pTab->ExecUpdate(name);
+    return kernel->pTab->ExecUpdatePipe(name, filename, role);
 }
 
 

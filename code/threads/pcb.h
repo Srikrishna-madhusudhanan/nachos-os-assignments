@@ -20,6 +20,10 @@ class PCB {
     PCB(int id);
     ~PCB();
 
+    //added for assignment-4 pipe function
+    char* pipeFileName;
+    int pipeRole; //0 = read, 1= write
+
     int Exec(char *filename, int pid);
     int Exec2(char* filename, int pid, int priority);
     int GetID();

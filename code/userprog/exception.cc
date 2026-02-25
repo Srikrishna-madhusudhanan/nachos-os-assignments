@@ -369,7 +369,7 @@ void handle_SC_Exec2() {
     return move_program_counter();
 }
 
-
+//added for assignment-4 pipe function
 void handle_SC_ExecPipe() {
     int virtAddr;
     virtAddr = kernel->machine->ReadRegister(
@@ -377,11 +377,11 @@ void handle_SC_ExecPipe() {
     char* name;
     name = stringUser2System(virtAddr);  // Lay ten chuong trinh, nap vao kernel
    
-    int file = kernel->machine->ReadRegister(5);
+    int fileAddr = kernel->machine->ReadRegister(5);
 
     int role = kernel->machine->ReadRegister(6);
     char* filename;
-    filename = stringUser2System(file);
+    filename = stringUser2System(fileAddr);
 
     if (name == NULL) {
         DEBUG(dbgSys, "\n Not enough memory in System");
@@ -390,9 +390,30 @@ void handle_SC_ExecPipe() {
         return move_program_counter();
     }
 
+    // Validate filename
+    if (filename == NULL) {
+        DEBUG(dbgSys, "\nExecPipe: Not enough memory for filename");
+        delete[] name;
+        kernel->machine->WriteRegister(2, -1);
+        move_program_counter();
+        return;
+    }
+
+    // Validate role (0 normal, 1 write, 2 read)
+    if (role < 0 || role > 2) {
+        DEBUG(dbgSys, "\nExecPipe: Invalid role value");
+        delete[] name;
+        delete[] filename;
+        kernel->machine->WriteRegister(2, -1);
+        move_program_counter();
+        return;
+    }
+
     kernel->machine->WriteRegister(2, SysExecPipe(name, filename, role));
     // DO NOT DELETE NAME, THE THEARD WILL DELETE IT LATER
     // delete[] name;
+    
+    delete[] filename;
 
     return move_program_counter();
 }

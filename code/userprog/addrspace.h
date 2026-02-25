@@ -20,6 +20,11 @@
 
 class AddrSpace {
    public:
+    //added for assignment-4 pipe function
+    int pipeRole;
+    char pipeFile[50];
+    OpenFile * pipeOpenFile;
+
     AddrSpace();                // Create an address space.
     AddrSpace(char *fileName);  // Load a program into addr space from
                                 // a file

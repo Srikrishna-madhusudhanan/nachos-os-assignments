@@ -74,6 +74,15 @@ int main() {
 		    PrintString(arg2);
 		    PrintString("\n");
 
+		    CreateFile("pipe.tmp");
+		    SpaceId p1 = ExecPipe(arg1, "pipe.tmp", 1);
+		    Join(p1);
+		    SpaceId p2 = ExecPipe(arg2, "pipe.tmp", 2);
+		    Join(p2);
+
+
+
+
 	    }
 	    else{
             PrintString("\n");
