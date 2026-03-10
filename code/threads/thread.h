@@ -91,6 +91,10 @@ class Thread {
     int processID;
     int parrentID;
     int exitStatus;
+    //added for assignment-4 pipe function
+    int pipeReadFD;
+    int pipeWriteFD;
+
     void FreeSpace() {
         if (space != 0) delete space;
     }

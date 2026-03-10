@@ -82,10 +82,27 @@ Sleep2:
 	syscall
 	j	$31
 	.end Sleep2
+        
+        .globl Pipe
+        .ent Pipe
+
+Pipe:
+        addiu $2,$0,SC_Pipe
+        syscall
+        j      $31
+        .end Pipe
+
+        .globl ExecPipe
+        .ent ExecPipe
+
+ExecPipe:
+        addiu $2,$0,SC_ExecPipe
+        syscall
+        j      $31
+        .end ExecPipe
 
 	.globl Exit
 	.ent 	Exit
-
 
 Exit:
 	addiu $2,$0,SC_Exit

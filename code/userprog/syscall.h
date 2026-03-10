@@ -55,6 +55,9 @@
 #define SC_Exec2 57
 // inserted for assignment-3, custom sleep function
 #define SC_Sleep2 58
+// inserted for assignment-4, pipe function
+#define SC_Pipe 59
+#define SC_ExecPipe 60
 
 #ifndef IN_ASM
 
@@ -83,6 +86,9 @@ int Mul(int op1, int op2);
 
 //custom sleep function added for assignment-3
 void Sleep2(int seconds);
+
+// added for assignment-4 pipe function
+int Pipe(int* readfd, int* writefd);
 
 int ReadNum();
 
@@ -121,6 +127,9 @@ SpaceId Exec(char *exec_name);
 
 // Inserted to give user-defined priorities to threads
 SpaceId Exec2(char *exec_name, int priority);
+
+// Inserted for assignment-4 pipe function
+SpaceId ExecPipe(char* name, int readfd, int writefd);
 
 SpaceId ExecV(int argc, char *argv[]);
 

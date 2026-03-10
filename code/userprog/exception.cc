@@ -25,6 +25,7 @@
 #include "main.h"
 #include "syscall.h"
 #include "ksyscall.h"
+#include "pipedescriptor.h" // added for assignment-4 pipe function
 //----------------------------------------------------------------------
 // ExceptionHandler
 // 	Entry point into the Nachos kernel.  Called when a user program
@@ -184,6 +185,23 @@ void handle_SC_Add() {
     kernel->machine->WriteRegister(2, (int)result);
 
     return move_program_counter();
+}
+
+void handle_SC_Pipe() {
+    int readPtr = kernel->machine->ReadRegister(4);
+    int writePtr = kernel->machine->ReadRegister(5);
+
+    int rfd, wfd;
+
+    int result = SysPipe(&rfd, &wfd);
+
+    kernel->machine->WriteMem(readPtr,4,rfd);
+    kernel->machine->WriteMem(writePtr,4,wfd);
+
+    kernel->machine->WriteRegister(2,result);
+
+    move_program_counter();
+    return;
 }
 
 void handle_SC_ReadNum() {
@@ -369,6 +387,34 @@ void handle_SC_Exec2() {
     return move_program_counter();
 }
 
+void handle_SC_ExecPipe() {
+    int virtAddr;
+    int rfd;
+    int wfd;
+
+    virtAddr = kernel->machine->ReadRegister(4);
+    
+    rfd = kernel->machine->ReadRegister(5);
+    
+    wfd = kernel->machine->ReadRegister(6);
+
+    char* name;
+    name = stringUser2System(virtAddr);
+
+    if (name == NULL) {
+        DEBUG(dbgSys,"\nExecPipe: Not enough memory");
+        kernel->machine->WriteRegister(2,-1);
+        return move_program_counter();
+    }
+
+    int pid = SysExecPipe(name,rfd,wfd);
+
+    kernel->machine->WriteRegister(2,pid);
+
+    return move_program_counter();
+
+}
+
 //added for assignment-3, custom sleep function
 void handle_SC_Sleep2(){
 	int seconds = kernel->machine->ReadRegister(4);
@@ -541,6 +587,10 @@ void ExceptionHandler(ExceptionType which) {
 		    return handle_SC_Exec2();
 		case SC_Sleep2:
 		    return handle_SC_Sleep2();
+		case SC_Pipe:
+		    return handle_SC_Pipe();
+		case SC_ExecPipe:
+		    return handle_SC_ExecPipe();
                 /**
                  * Handle all not implemented syscalls
                  * If you want to write a new handler for syscall:

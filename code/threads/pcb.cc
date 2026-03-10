@@ -108,7 +108,36 @@ int PCB::Exec2(char* filename, int id, int priority) {
     return id;
 }
 
+// added for assignment-4 pipe function
+int PCB::ExecPipe(char* filename, int id, int rfd, int wfd)
+{
 
+    multex->P();
+
+    this->thread = new Thread(filename,true);
+
+    if(this->thread == NULL)
+    {
+        printf("\nPCB::ExecPipe: Not enough memory!\n");
+        multex->V();
+        return -1;
+    }
+
+    this->thread->processID = id;
+    this->thread->priority  = id;
+
+    this->parentID = kernel->currentThread->processID;
+
+    // pass pipe descriptors to child thread
+    this->thread->pipeReadFD  = rfd;
+    this->thread->pipeWriteFD = wfd;
+
+    this->thread->Fork(StartProcess_2,&this->thread->processID);
+
+    multex->V();
+
+    return id;
+}
 
 
 

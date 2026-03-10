@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <limits>
 #include <cstdint>
+#include "pipedescriptor.h"
 
 void SysHalt() { kernel->interrupt->Halt(); }
 
@@ -174,7 +175,72 @@ int SysOpen(char* fileName, int type) {
 
 int SysClose(int id) { return kernel->fileSystem->Close(id); }
 
+int SysPipeRead(int bufferAddr, int size, int fd)
+{
+    printf("PIPE READ called\n");	
+    PipeDescriptor *pd = pipeTable[fd];
+
+    if(pd == NULL || pd->role != PIPE_READ)
+        return -1;
+
+    PipeBuffer *pipe = pd->pipe;
+
+    int count = 0;
+
+    while(count < size && pipe->size > 0)
+    {
+        char ch = pipe->buffer[pipe->readPos];
+
+        pipe->readPos = (pipe->readPos + 1) % PIPE_BUFFER_SIZE;
+        pipe->size--;
+
+        kernel->machine->WriteMem(bufferAddr + count,1,ch);
+
+        count++;
+    }
+
+    return count;
+}
+
+int SysPipeWrite(int bufferAddr, int size, int fd)
+{
+    printf("PIPE WRITE called\n");
+    PipeDescriptor *pd = pipeTable[fd];
+
+    if(pd == NULL || pd->role != PIPE_WRITE)
+        return -1;
+
+    PipeBuffer *pipe = pd->pipe;
+
+    int count = 0;
+    int val;
+
+    while(count < size && pipe->size < PIPE_BUFFER_SIZE)
+    {
+        kernel->machine->ReadMem(bufferAddr + count,1,&val);
+
+        char ch = (char)val;
+
+        pipe->buffer[pipe->writePos] = ch;
+
+        pipe->writePos = (pipe->writePos + 1) % PIPE_BUFFER_SIZE;
+        pipe->size++;
+
+        count++;
+    }
+
+    return count;
+}
+
+/*
 int SysRead(char* buffer, int charCount, int fileId) {
+    if(fileId < MAX_PIPE_DESCRIPTORS && pipeTable[fileId] != NULL)
+    {
+        if(pipeTable[fileId]->type == DESC_PIPE)
+        {
+            return SysPipeRead((int)buffer,charCount,fileId);
+        }
+    }
     if (fileId == 0) {
         return kernel->synchConsoleIn->GetString(buffer, charCount);
     }
@@ -182,9 +248,82 @@ int SysRead(char* buffer, int charCount, int fileId) {
 }
 
 int SysWrite(char* buffer, int charCount, int fileId) {
+    if(fileId < MAX_PIPE_DESCRIPTORS && pipeTable[fileId] != NULL)
+    {
+        if(pipeTable[fileId]->type == DESC_PIPE)
+        {
+            return SysPipeWrite((int)buffer,charCount,fileId);
+        }
+    }
     if (fileId == 1) {
         return kernel->synchConsoleOut->PutString(buffer, charCount);
     }
+    return kernel->fileSystem->Write(buffer, charCount, fileId);
+}
+*/
+
+
+int SysRead(char* buffer, int charCount, int fileId)
+{
+    if(fileId == 0) // ConsoleInput
+    {
+        return kernel->synchConsoleIn->GetString(buffer,charCount);
+    }
+
+    if(fileId < MAX_PIPE_DESCRIPTORS && pipeTable[fileId] != NULL)
+    {
+        if(pipeTable[fileId]->type == DESC_PIPE)
+        {
+            PipeBuffer *pipe = pipeTable[fileId]->pipe;
+
+            int count = 0;
+
+            while(count < charCount && pipe->size > 0)
+            {
+                buffer[count] = pipe->buffer[pipe->readPos];
+
+                pipe->readPos = (pipe->readPos + 1) % PIPE_BUFFER_SIZE;
+                pipe->size--;
+
+                count++;
+            }
+
+            return count;
+        }
+    }
+
+    return kernel->fileSystem->Read(buffer, charCount, fileId);
+}
+
+int SysWrite(char* buffer, int charCount, int fileId) {
+
+    if(fileId < MAX_PIPE_DESCRIPTORS && pipeTable[fileId] != NULL)
+    {
+        if(pipeTable[fileId]->type == DESC_PIPE)
+        {
+            PipeBuffer *pipe = pipeTable[fileId]->pipe;
+
+            int count = 0;
+
+            while(count < charCount && pipe->size < PIPE_BUFFER_SIZE)
+            {
+                pipe->buffer[pipe->writePos] = buffer[count];
+
+                pipe->writePos = (pipe->writePos + 1) % PIPE_BUFFER_SIZE;
+                pipe->size++;
+
+                count++;
+            }
+
+            return count;
+        }
+    }
+
+    if(fileId == 1)
+    {
+        return kernel->synchConsoleOut->PutString(buffer, charCount);
+    }
+
     return kernel->fileSystem->Write(buffer, charCount, fileId);
 }
 
@@ -225,6 +364,23 @@ int SysExec2(char* name, int priority) {
     return kernel->pTab->ExecUpdate2(name, priority);
 }
 
+// included for assignment-4 pipe function
+int SysExecPipe(char* name, int rfd, int wfd)
+{
+    OpenFile* oFile = kernel->fileSystem->Open(name);
+
+    if(oFile == NULL)
+    {
+        DEBUG(dbgSys,"\nExecPipe: Cannot open file");
+        return -1;
+    }
+
+    delete oFile;
+    //Return child process id
+    return kernel->pTab->ExecUpdatePipe(name,rfd,wfd);
+}
+
+int SysPipe(int *readfd, int *writefd);
 
 int SysJoin(int id) { return kernel->pTab->JoinUpdate(id); }
 

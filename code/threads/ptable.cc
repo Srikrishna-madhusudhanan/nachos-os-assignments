@@ -116,6 +116,43 @@ int PTable::ExecUpdate2(char* name, int priority) {
     return pid;
 }
 
+//added for assignment-4 pipe function
+int PTable::ExecUpdatePipe(char* name, int rfd, int wfd) {
+
+    bmsem->P();
+
+    if (name == NULL) {
+        DEBUG(dbgSys,"\nPTable::ExecPipe: name NULL");
+        bmsem->V();
+        return -1;
+    }
+
+    int index = this->GetFreeSlot();
+
+    if (index < 0) {
+        DEBUG(dbgSys,"\nPTable::ExecPipe: no free slot");
+        bmsem->V();
+        return -1;
+    }
+
+    pcb[index] = new PCB(index);
+
+    pcb[index]->SetFileName(name);
+
+    kernel->fileSystem->Renew(index);
+
+    pcb[index]->parentID = kernel->currentThread->processID;
+
+    // store pipe descriptors
+    pcb[index]->pipeReadFD  = rfd;
+    pcb[index]->pipeWriteFD = wfd;
+
+    int pid = pcb[index]->ExecPipe(name,index,rfd,wfd);
+
+    bmsem->V();
+
+    return pid;
+}
 
 
 int PTable::ExitUpdate(int exitcode) {
