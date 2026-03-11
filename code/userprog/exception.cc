@@ -321,6 +321,42 @@ void handle_SC_Write() {
     return move_program_counter();
 }
 
+//added for assignment-4 pipe function
+void handle_SC_WritePipe()
+{
+    int addr = kernel->machine->ReadRegister(4);
+    int size = kernel->machine->ReadRegister(5);
+
+    char *buffer = stringUser2System(addr,size);
+
+    int result = SysWritePipe(buffer,size);
+
+    kernel->machine->WriteRegister(2,result);
+
+    delete[] buffer;
+
+    move_program_counter();
+}
+
+void handle_SC_ReadPipe()
+{
+    int addr = kernel->machine->ReadRegister(4);
+    int size = kernel->machine->ReadRegister(5);
+
+    char *buffer = new char[size];
+
+    int result = SysReadPipe(buffer,size);
+
+    StringSys2User(buffer,addr,size);
+
+    kernel->machine->WriteRegister(2,result);
+
+    delete[] buffer;
+
+    move_program_counter();
+}
+
+
 /**
  * Handle SC_Seek
  * This method will seek the file to the given position.
@@ -591,6 +627,10 @@ void ExceptionHandler(ExceptionType which) {
 		    return handle_SC_Pipe();
 		case SC_ExecPipe:
 		    return handle_SC_ExecPipe();
+		case SC_ReadPipe:
+		    return handle_SC_ReadPipe();
+		case SC_WritePipe:
+		    return handle_SC_WritePipe();
                 /**
                  * Handle all not implemented syscalls
                  * If you want to write a new handler for syscall:

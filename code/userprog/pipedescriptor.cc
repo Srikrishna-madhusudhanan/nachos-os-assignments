@@ -7,6 +7,9 @@ PipeDescriptor* pipeTable[MAX_PIPE_DESCRIPTORS] = {NULL};
 int SysPipe(int *readfd, int *writefd)
 {
     PipeBuffer *pipe = new PipeBuffer();
+    pipe->size = 0;
+    pipe->readPos = 0;
+    pipe->writePos = 0;
 
     int r = -1;
     int w = -1;

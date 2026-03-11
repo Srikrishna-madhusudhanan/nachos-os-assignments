@@ -6,12 +6,13 @@
 int main()
 {
     char msg[20];
+    int n;
 
     Write("Enter message: ",15,ConsoleOutput);
 
-    Read(msg,20,ConsoleInput);
+    n = Read(msg,5,ConsoleInput);
 
-    Write(msg,20,1);   // write to pipe (fd=1 if write descriptor)
+    WritePipe(msg,n);   // send only actual bytes
 
     Exit(0);
 }

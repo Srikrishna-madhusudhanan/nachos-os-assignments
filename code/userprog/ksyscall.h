@@ -175,53 +175,20 @@ int SysOpen(char* fileName, int type) {
 
 int SysClose(int id) { return kernel->fileSystem->Close(id); }
 
-int SysPipeRead(int bufferAddr, int size, int fd)
+//added for assignment-4 pipe function
+int SysWritePipe(char *buffer,int size)
 {
-    printf("PIPE READ called\n");	
-    PipeDescriptor *pd = pipeTable[fd];
+    int fd = kernel->currentThread->pipeWriteFD;
 
-    if(pd == NULL || pd->role != PIPE_READ)
-        return -1;
+    printf("SysWritePipe fd = %d", fd);
 
-    PipeBuffer *pipe = pd->pipe;
+    PipeBuffer *pipe = pipeTable[fd]->pipe;
 
     int count = 0;
-
-    while(count < size && pipe->size > 0)
-    {
-        char ch = pipe->buffer[pipe->readPos];
-
-        pipe->readPos = (pipe->readPos + 1) % PIPE_BUFFER_SIZE;
-        pipe->size--;
-
-        kernel->machine->WriteMem(bufferAddr + count,1,ch);
-
-        count++;
-    }
-
-    return count;
-}
-
-int SysPipeWrite(int bufferAddr, int size, int fd)
-{
-    printf("PIPE WRITE called\n");
-    PipeDescriptor *pd = pipeTable[fd];
-
-    if(pd == NULL || pd->role != PIPE_WRITE)
-        return -1;
-
-    PipeBuffer *pipe = pd->pipe;
-
-    int count = 0;
-    int val;
 
     while(count < size && pipe->size < PIPE_BUFFER_SIZE)
     {
-        kernel->machine->ReadMem(bufferAddr + count,1,&val);
-
-        char ch = (char)val;
-
-        pipe->buffer[pipe->writePos] = ch;
+        pipe->buffer[pipe->writePos] = buffer[count];
 
         pipe->writePos = (pipe->writePos + 1) % PIPE_BUFFER_SIZE;
         pipe->size++;
@@ -232,15 +199,37 @@ int SysPipeWrite(int bufferAddr, int size, int fd)
     return count;
 }
 
-/*
+int SysReadPipe(char *buffer,int size)
+{
+    int fd = kernel->currentThread->pipeReadFD;
+
+    printf("SysReadPipe fd = %d", fd);
+
+    PipeBuffer *pipe = pipeTable[fd]->pipe;
+
+    int count = 0;
+
+    while(count < size && pipe->size > 0)
+    {
+        buffer[count] = pipe->buffer[pipe->readPos];
+
+        pipe->readPos = (pipe->readPos + 1) % PIPE_BUFFER_SIZE;
+        pipe->size--;
+
+        count++;
+    }
+
+    return count;
+}
+
 int SysRead(char* buffer, int charCount, int fileId) {
-    if(fileId < MAX_PIPE_DESCRIPTORS && pipeTable[fileId] != NULL)
+   /* if(fileId < MAX_PIPE_DESCRIPTORS && pipeTable[fileId] != NULL)
     {
         if(pipeTable[fileId]->type == DESC_PIPE)
         {
             return SysPipeRead((int)buffer,charCount,fileId);
         }
-    }
+    }*/
     if (fileId == 0) {
         return kernel->synchConsoleIn->GetString(buffer, charCount);
     }
@@ -248,21 +237,21 @@ int SysRead(char* buffer, int charCount, int fileId) {
 }
 
 int SysWrite(char* buffer, int charCount, int fileId) {
-    if(fileId < MAX_PIPE_DESCRIPTORS && pipeTable[fileId] != NULL)
+    /*if(fileId < MAX_PIPE_DESCRIPTORS && pipeTable[fileId] != NULL)
     {
         if(pipeTable[fileId]->type == DESC_PIPE)
         {
             return SysPipeWrite((int)buffer,charCount,fileId);
         }
-    }
+    }*/
     if (fileId == 1) {
         return kernel->synchConsoleOut->PutString(buffer, charCount);
     }
     return kernel->fileSystem->Write(buffer, charCount, fileId);
 }
-*/
 
 
+/*
 int SysRead(char* buffer, int charCount, int fileId)
 {
     if(fileId == 0) // ConsoleInput
@@ -326,6 +315,7 @@ int SysWrite(char* buffer, int charCount, int fileId) {
 
     return kernel->fileSystem->Write(buffer, charCount, fileId);
 }
+*/
 
 int SysSeek(int seekPos, int fileId) {
     if (fileId <= 1) {
@@ -379,9 +369,28 @@ int SysExecPipe(char* name, int rfd, int wfd)
     //Return child process id
     return kernel->pTab->ExecUpdatePipe(name,rfd,wfd);
 }
+/*
+int SysPipe(int *rfd, int *wfd){
+    PipeBuffer *buf = new PipeBuffer;
 
-int SysPipe(int *readfd, int *writefd);
+    buf->readPos = 0;
+    buf->writePos = 0;
+    buf->size = 0;
 
+    pipeTable[0] = new PipeDescriptor;
+    pipeTable[0]->pipe = buf;
+    pipeTable[0]->type = 0;   // read
+
+    pipeTable[1] = new PipeDescriptor;
+    pipeTable[1]->pipe = buf;
+    pipeTable[1]->type = 1;   // write
+
+    kernel->machine->WriteMem((int)rfd,4,0);
+    kernel->machine->WriteMem((int)wfd,4,1);
+
+    return 0;
+}
+*/
 int SysJoin(int id) { return kernel->pTab->JoinUpdate(id); }
 
 int SysExit(int id) { return kernel->pTab->ExitUpdate(id); }

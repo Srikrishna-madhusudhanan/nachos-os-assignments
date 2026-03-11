@@ -22,17 +22,17 @@ hosttype = unknown
 ifeq ($(osname),Linux)
 # full path name of your cpp program i.e.: 
 #clg
-#CPP = /home/usr/local/nachos/lib/gcc-lib/decstation-ultrix/2.95.2/cpp
+CPP = /home/usr/local/nachos/lib/gcc-lib/decstation-ultrix/2.95.2/cpp
 #home
-CPP = /usr/local/nachos/lib/gcc-lib/decstation-ultrix/2.95.2/cpp
+#CPP = /usr/local/nachos/lib/gcc-lib/decstation-ultrix/2.95.2/cpp
 
 
 # directory in which your gcc cross-compiler lives i.e.: 
 #clg
-#GCCDIR = /home/usr/local/nachos/bin/decstation-ultrix-
+GCCDIR = /home/usr/local/nachos/bin/decstation-ultrix-
 
 #home
-GCCDIR = /usr/local/nachos/bin/decstation-ultrix-
+#GCCDIR = /usr/local/nachos/bin/decstation-ultrix-
 
 
 LDFLAGS = -T script -N

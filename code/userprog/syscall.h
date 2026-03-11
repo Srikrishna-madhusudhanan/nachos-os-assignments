@@ -58,6 +58,8 @@
 // inserted for assignment-4, pipe function
 #define SC_Pipe 59
 #define SC_ExecPipe 60
+#define SC_ReadPipe 61
+#define SC_WritePipe 62
 
 #ifndef IN_ASM
 
@@ -193,6 +195,11 @@ int Read(char *buffer, int size, OpenFileId id);
 /* Set the seek position of the open file "id"
  * to the byte "position".
  */
+
+// added for assignment-4 pipe function
+int ReadPipe(char *buffer, int size);
+int WritePipe(char *buffer, int size);
+
 int Seek(int position, OpenFileId id);
 
 /* Close the file, we're done reading and writing to it.

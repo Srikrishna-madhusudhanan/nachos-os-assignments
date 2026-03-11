@@ -144,8 +144,8 @@ int PTable::ExecUpdatePipe(char* name, int rfd, int wfd) {
     pcb[index]->parentID = kernel->currentThread->processID;
 
     // store pipe descriptors
-    pcb[index]->pipeReadFD  = rfd;
-    pcb[index]->pipeWriteFD = wfd;
+    //pcb[index]->pipeReadFD  = rfd;
+    //pcb[index]->pipeWriteFD = wfd;
 
     int pid = pcb[index]->ExecPipe(name,index,rfd,wfd);
 

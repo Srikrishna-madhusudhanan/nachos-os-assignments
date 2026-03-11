@@ -4,18 +4,18 @@
 
 int main()
 {
-    char buf[20];
-    int i;
+    char buf[100];
+    int i,n;
 
-    Read(buf,20,0);
+    n = ReadPipe(buf,100);
 
-    for(i=0;i<20;i++)
+    for(i=0;i<n;i++)
     {
         if(buf[i] >= 'a' && buf[i] <= 'z')
             buf[i] = buf[i] - 32;
     }
 
-    Write(buf,20,ConsoleOutput);
+    Write(buf,n,ConsoleOutput);
 
     Exit(0);
 }

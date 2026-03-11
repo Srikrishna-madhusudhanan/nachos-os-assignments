@@ -144,6 +144,22 @@ Join:
 	j	$31
 	.end Join
 
+	.globl ReadPipe
+        .ent    ReadPipe
+ReadPipe:
+        addiu $2,$0,SC_ReadPipe
+        syscall
+        j       $31
+	.end ReadPipe
+
+	.globl WritePipe
+        .ent    WritePipe
+WritePipe:
+        addiu $2,$0,SC_WritePipe
+        syscall
+        j      $31
+        .end WritePipe
+
 	.globl Create
 	.ent	Create
 Create:
