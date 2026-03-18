@@ -12,7 +12,7 @@
 
 #ifndef ADDRSPACE_H
 #define ADDRSPACE_H
-
+#include "noff.h"
 #include "copyright.h"
 #include "filesys.h"
 
@@ -20,6 +20,8 @@
 
 class AddrSpace {
    public:
+   OpenFile *executable;
+   NoffHeader noffH;
     AddrSpace();                // Create an address space.
     AddrSpace(char *fileName);  // Load a program into addr space from
                                 // a file

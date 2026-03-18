@@ -102,8 +102,19 @@ AddrSpace::~AddrSpace() {
 //----------------------------------------------------------------------
 
 AddrSpace::AddrSpace(char *fileName) {
-    OpenFile *executable = kernel->fileSystem->Open(fileName);
-    NoffHeader noffH;
+    //added for assignment-5 demand paging
+	//OpenFile *executable = kernel->fileSystem->Open(fileName);
+    
+       this->executable = kernel->fileSystem->Open(fileName);
+       ASSERT(this->executable != NULL);
+
+        this->executable->ReadAt((char *)&this->noffH, sizeof(NoffHeader), 0);
+	// code to fix endian
+	if ((noffH.noffMagic != NOFFMAGIC) &&
+    (WordToHost(noffH.noffMagic) == NOFFMAGIC)) {
+    SwapHeader(&noffH);
+}
+	//NoffHeader noffH;
     unsigned int i, size, j, offset;
     unsigned int numCodePage,
         numDataPage;  // số trang cho phần code và phần initData
@@ -150,7 +161,8 @@ AddrSpace::AddrSpace(char *fileName) {
         pageTable[i].virtualPage = i;  // for now, virtual page # = phys page #
         pageTable[i].physicalPage = kernel->gPhysPageBitMap->FindAndSet();
         // cerr << pageTable[i].physicalPage << endl;
-        pageTable[i].valid = TRUE;
+        //pageTable[i].valid = TRUE;
+	pageTable[i].valid = FALSE;
         pageTable[i].use = FALSE;
         pageTable[i].dirty = FALSE;
         pageTable[i].readOnly = FALSE;  // if the code segment was entirely on
@@ -163,6 +175,7 @@ AddrSpace::AddrSpace(char *fileName) {
         DEBUG(dbgAddr, "phyPage " << pageTable[i].physicalPage);
     }
 
+    /*
     if (noffH.code.size > 0) {
         for (i = 0; i < numPages; i++)
             executable->ReadAt(
@@ -176,11 +189,13 @@ AddrSpace::AddrSpace(char *fileName) {
             executable->ReadAt(
                 &(kernel->machine->mainMemory[noffH.initData.virtualAddr]) +
                     (pageTable[i].physicalPage * PageSize),
-                PageSize, noffH.initData.inFileAddr + (i * PageSize));
+         	    PageSize, noffH.initData.inFileAddr + (i * PageSize));
     }
+    */
 
     kernel->addrLock->V();
-    delete executable;
+    // to use executable in PageFault Handler, do not delete it here
+    //delete executable;
     return;
 }
 

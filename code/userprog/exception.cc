@@ -551,6 +551,8 @@ void handle_SC_GetPid() {
 void ExceptionHandler(ExceptionType which) {
     int type = kernel->machine->ReadRegister(2);
 
+    int caddr, cpage;
+
     DEBUG(dbgSys, "Received Exception " << which << " type: " << type << "\n");
 
     switch (which) {
@@ -559,6 +561,18 @@ void ExceptionHandler(ExceptionType which) {
             DEBUG(dbgSys, "Switch to system mode\n");
             break;
         case PageFaultException:
+	    //modified for assignment-5 demand paging
+	    printf("Entered PageFault Exception\n");
+	    printf("PC -- %d\n", kernel->machine->ReadRegister(PCReg));
+	    caddr = kernel->machine->ReadRegister(BadVAddrReg);
+	    printf("badVAddr =  %d\n", caddr);
+	    cpage = caddr/PageSize;
+	    kernel->currentThread->space->pageTable[cpage].valid = TRUE;
+	    if (caddr >= p_noffH.code.virtualAddr && caddr < p_noffH.code.virtualAddr+p_noffH.code.size)
+	    {
+		    executable->ReadAt();
+	    }
+            break;
         case ReadOnlyException:
         case BusErrorException:
         case AddressErrorException:
