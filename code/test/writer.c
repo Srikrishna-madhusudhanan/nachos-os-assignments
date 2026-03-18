@@ -5,14 +5,21 @@
 
 int main()
 {
-    char msg[20];
+    char msg[100];
     int n;
+    int len;
+
+    Write("Enter length of message: ",25,ConsoleOutput);
+    len = ReadNum();
 
     Write("Enter message: ",15,ConsoleOutput);
 
-    n = Read(msg,5,ConsoleInput);
+    n = Read(msg,len,ConsoleInput);
 
-    WritePipe(msg,n);   // send only actual bytes
+    /* send length first */
+    WritePipe((char*)&len, sizeof(int));
+    
+    WritePipe(msg,n);   // send actual bytes
 
     Exit(0);
 }

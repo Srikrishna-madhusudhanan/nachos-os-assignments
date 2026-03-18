@@ -7,7 +7,13 @@ int main()
     char buf[100];
     int i,n;
 
-    n = ReadPipe(buf,100);
+    //n = ReadPipe(buf,100);
+
+    /* read length first */
+    ReadPipe((char*)&n, sizeof(int));
+
+    /* then read exactly n bytes */
+    ReadPipe(buf, n);
 
     for(i=0;i<n;i++)
     {
@@ -16,6 +22,7 @@ int main()
     }
 
     Write(buf,n,ConsoleOutput);
+    PrintString("\n");
 
     Exit(0);
 }

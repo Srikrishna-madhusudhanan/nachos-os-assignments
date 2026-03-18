@@ -180,7 +180,7 @@ int SysWritePipe(char *buffer,int size)
 {
     int fd = kernel->currentThread->pipeWriteFD;
 
-    printf("SysWritePipe fd = %d", fd);
+    //printf("SysWritePipe fd = %d", fd);
 
     PipeBuffer *pipe = pipeTable[fd]->pipe;
 
@@ -203,7 +203,7 @@ int SysReadPipe(char *buffer,int size)
 {
     int fd = kernel->currentThread->pipeReadFD;
 
-    printf("SysReadPipe fd = %d", fd);
+    //printf("SysReadPipe fd = %d", fd);
 
     PipeBuffer *pipe = pipeTable[fd]->pipe;
 
