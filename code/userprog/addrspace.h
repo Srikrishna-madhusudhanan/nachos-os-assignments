@@ -22,6 +22,11 @@ class AddrSpace {
    public:
    OpenFile *executable;
    NoffHeader noffH;
+   TranslationEntry* GetPageTable() { return pageTable; }
+   unsigned int GetNumPages() { return numPages; }
+   OpenFile* GetExecutable() { return executable; }
+   NoffHeader GetNoffH() { return noffH; }
+   
     AddrSpace();                // Create an address space.
     AddrSpace(char *fileName);  // Load a program into addr space from
                                 // a file

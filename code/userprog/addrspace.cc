@@ -86,7 +86,10 @@ AddrSpace::AddrSpace() {
 AddrSpace::~AddrSpace() {
     int i;
     for (i = 0; i < numPages; i++) {
+	// modified for assignment-5 demand paging
+	if (pageTable[i].physicalPage != -1) {
         kernel->gPhysPageBitMap->Clear(pageTable[i].physicalPage);
+	}
     }
     delete[] pageTable;
 }
@@ -127,7 +130,8 @@ AddrSpace::AddrSpace(char *fileName) {
         return;
     }
     //đọc header của file
-    executable->ReadAt((char *)&noffH, sizeof(noffH), 0);
+    // commented out since the modified read has been added above (for assignment-5 demand paging)
+    //executable->ReadAt((char *)&noffH, sizeof(noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) &&
         (WordToHost(noffH.noffMagic) == NOFFMAGIC))
         SwapHeader(&noffH);
@@ -159,7 +163,9 @@ AddrSpace::AddrSpace(char *fileName) {
     pageTable = new TranslationEntry[numPages];
     for (i = 0; i < numPages; i++) {
         pageTable[i].virtualPage = i;  // for now, virtual page # = phys page #
-        pageTable[i].physicalPage = kernel->gPhysPageBitMap->FindAndSet();
+	//below line is removed for demand paging implementation
+        //pageTable[i].physicalPage = kernel->gPhysPageBitMap->FindAndSet();
+	pageTable[i].physicalPage = -1; //NOT allocated
         // cerr << pageTable[i].physicalPage << endl;
         //pageTable[i].valid = TRUE;
 	pageTable[i].valid = FALSE;
@@ -169,9 +175,12 @@ AddrSpace::AddrSpace(char *fileName) {
         // a separate page, we could set its
         // pages to be read-only
         // xóa các trang này trên memory
-        bzero(&(kernel->machine
+	// below line commented out for assignment-5 demand paging
+        /*
+	bzero(&(kernel->machine
                     ->mainMemory[pageTable[i].physicalPage * PageSize]),
               PageSize);
+	*/
         DEBUG(dbgAddr, "phyPage " << pageTable[i].physicalPage);
     }
 

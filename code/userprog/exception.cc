@@ -551,7 +551,7 @@ void handle_SC_GetPid() {
 void ExceptionHandler(ExceptionType which) {
     int type = kernel->machine->ReadRegister(2);
 
-    int caddr, cpage;
+    //int caddr, cpage;
 
     DEBUG(dbgSys, "Received Exception " << which << " type: " << type << "\n");
 
@@ -560,9 +560,9 @@ void ExceptionHandler(ExceptionType which) {
             kernel->interrupt->setStatus(SystemMode);
             DEBUG(dbgSys, "Switch to system mode\n");
             break;
-        case PageFaultException:
+        case PageFaultException: {
 	    //modified for assignment-5 demand paging
-	    printf("Entered PageFault Exception\n");
+	    /*printf("Entered PageFault Exception\n");
 	    printf("PC -- %d\n", kernel->machine->ReadRegister(PCReg));
 	    caddr = kernel->machine->ReadRegister(BadVAddrReg);
 	    printf("badVAddr =  %d\n", caddr);
@@ -570,16 +570,105 @@ void ExceptionHandler(ExceptionType which) {
 	    kernel->currentThread->space->pageTable[cpage].valid = TRUE;
 	    if (caddr >= p_noffH.code.virtualAddr && caddr < p_noffH.code.virtualAddr+p_noffH.code.size)
 	    {
-		    executable->ReadAt();
+		    executable->ReadAt(
+			&(kernel->machine->mainMemory[pageTable[cpage].physicalPage*PageSize]),
+			PageSize, noffH.code.inFileAddr + (cpage*PageSize)
+				    );
 	    }
-            break;
-        case ReadOnlyException:
-        case BusErrorException:
-        case AddressErrorException:
-        case OverflowException:
-        case IllegalInstrException:
-        case NumExceptionTypes:
-            cerr << "Error " << which << " occurs\n";
+
+	    if (caddr >= p_noffH.initData.virtualAddr && caddr < p_noffH.initData.virtualAddr+p_noffH.initData.size)
+	    {
+		    executable->ReadAt(
+			&(kernel->machine->mainMemory[pageTable[i].physicalPage*PageSize]),
+			PageSize, noffH.code.inFileAddr + (i*PageSize)
+				    );
+	    }
+	    */
+	    printf("Entered PageFault Exception\n");
+
+	    int badVAddr = kernel->machine->ReadRegister(BadVAddrReg);
+	    int vpn = badVAddr / PageSize;
+
+	    printf("Page fault at VPN = %d\n", vpn);
+
+	    AddrSpace *space = kernel->currentThread->space;
+
+	    // Safety check
+	    if (vpn < 0 || (unsigned int)vpn >= space->GetNumPages()) {
+		    printf("Invalid VPN %d\n", vpn);
+		    ASSERT(FALSE);
+	    }
+
+	    TranslationEntry *pageTable = space->GetPageTable();
+	    TranslationEntry *pte = &pageTable[vpn];
+	    
+	    // If already valid, nothing to do
+	    if (pte->valid) {
+		    printf("Already valid VPN %d\n", vpn);
+		    return;
+	    }
+
+	    // 1. Allocate physical page
+	    int physPage = kernel->gPhysPageBitMap->FindAndSet();
+	    ASSERT(physPage != -1);
+
+	    printf("Allocating physical page %d\n", physPage);
+
+	    pte->physicalPage = physPage;
+	    pte->valid = TRUE;
+	    pte->use = FALSE;
+	    pte->dirty = FALSE;
+
+	    // 2. Zero the page
+	    bzero(&(kernel->machine->mainMemory[physPage * PageSize]), PageSize);
+
+	    // 3. Load from executable if needed
+	    NoffHeader noffH = space->GetNoffH();
+	    OpenFile *executable = space->GetExecutable();
+
+	    int vaddr = vpn * PageSize;
+
+	    // for code segment
+	    if (vaddr >= noffH.code.virtualAddr &&
+			    vaddr < noffH.code.virtualAddr + noffH.code.size) {
+
+		    int offset = noffH.code.inFileAddr +
+			    (vaddr - noffH.code.virtualAddr);
+
+		    executable->ReadAt(
+				    &(kernel->machine->mainMemory[physPage * PageSize]),
+				    PageSize,
+				    offset
+				    );
+	    }
+
+	    // for init data segment
+	    else if (vaddr >= noffH.initData.virtualAddr &&
+			    vaddr < noffH.initData.virtualAddr + noffH.initData.size) {
+
+		    int offset = noffH.initData.inFileAddr +
+			    (vaddr - noffH.initData.virtualAddr);
+
+		    executable->ReadAt(
+				    &(kernel->machine->mainMemory[physPage * PageSize]),
+				    PageSize,
+				    offset
+				    );
+	    }
+
+	    // stack/ bss segment
+	    // Already zero-filled, so nothing to do
+
+
+	    return;
+	}
+	case ReadOnlyException:
+	case BusErrorException:
+	case AddressErrorException:
+	case OverflowException:
+	case IllegalInstrException:
+	case NumExceptionTypes:
+	    cerr << "Error " << which << " occurs\n";
             SysHalt();
             ASSERTNOTREACHED();
 
