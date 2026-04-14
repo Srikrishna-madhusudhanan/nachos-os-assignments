@@ -584,12 +584,13 @@ void ExceptionHandler(ExceptionType which) {
 				    );
 	    }
 	    */
-	    printf("Entered PageFault Exception\n");
+	    //printf("Entered PageFault Exception\n");
 
+	    kernel->stats->numPageFaults++;
 	    int badVAddr = kernel->machine->ReadRegister(BadVAddrReg);
 	    int vpn = badVAddr / PageSize;
 
-	    printf("Page fault at VPN = %d\n", vpn);
+	    //printf("Page fault at VPN = %d\n", vpn);
 
 	    AddrSpace *space = kernel->currentThread->space;
 
@@ -612,7 +613,7 @@ void ExceptionHandler(ExceptionType which) {
 	    int physPage = kernel->gPhysPageBitMap->FindAndSet();
 	    ASSERT(physPage != -1);
 
-	    printf("Allocating physical page %d\n", physPage);
+	    //printf("Allocating physical page %d\n", physPage);
 
 	    pte->physicalPage = physPage;
 	    pte->valid = TRUE;
