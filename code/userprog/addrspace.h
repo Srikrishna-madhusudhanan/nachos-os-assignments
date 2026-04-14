@@ -20,6 +20,10 @@
 
 class AddrSpace {
    public:
+   //added for assignment-6 malloc
+   int heapStart;   // virtual address
+   int heapEnd;
+   int heapBreak;   // current top (like sbrk)
    OpenFile *executable;
    NoffHeader noffH;
    TranslationEntry* GetPageTable() { return pageTable; }
@@ -38,6 +42,9 @@ class AddrSpace {
 
     void SaveState();     // Save/restore address space-specific
     void RestoreState();  // info on a context switch
+
+    //sbrk for heap (assignment-6 malloc)
+    int Sbrk(int);
 
     // Translate virtual address _vaddr_
     // to physical address _paddr_. _mode_

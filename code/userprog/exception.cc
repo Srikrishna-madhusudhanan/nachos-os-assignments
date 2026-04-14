@@ -466,6 +466,16 @@ void handle_SC_Sleep2(){
   	return;
 }
 
+//added for assignment-6 malloc and free
+// we need sbrk function to increment the break pointer
+// decrementing is just done by passing a negative value to Sbrk
+void handle_SC_Sbrk(){
+	int inc = kernel->machine->ReadRegister(4);
+	int addr = kernel->currentThread->space->Sbrk(inc);
+	kernel->machine->WriteRegister(2, addr);
+	return move_program_counter();
+}
+
 
 /**
  * @brief handle System Call Join
@@ -735,6 +745,8 @@ void ExceptionHandler(ExceptionType which) {
 		    return handle_SC_ReadPipe();
 		case SC_WritePipe:
 		    return handle_SC_WritePipe();
+		case SC_Sbrk:
+		    return handle_SC_Sbrk();
                 /**
                  * Handle all not implemented syscalls
                  * If you want to write a new handler for syscall:

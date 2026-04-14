@@ -55,6 +55,9 @@ static void SwapHeader(NoffHeader *noffH) {
 #endif
 }
 
+//included for assignment-6 malloc
+#define UserHeapSize (4 * 1024)  // 4 KB heap
+
 //----------------------------------------------------------------------
 // AddrSpace::AddrSpace
 // 	Create an address space to run a user program.
@@ -138,13 +141,23 @@ AddrSpace::AddrSpace(char *fileName) {
     ASSERT(noffH.noffMagic == NOFFMAGIC);
     kernel->addrLock->P();
     // how big is address space?
+    // modified to include heap size for assignment-6 malloc
     size = noffH.code.size + noffH.initData.size + noffH.uninitData.size +
+           UserHeapSize + 
            UserStackSize;  // we need to increase the size
-                           // to leave room for the stack
+    			   // to leave room for the stack
+    //calculate the start and end addresses for the heap
+    heapStart = noffH.code.size +
+            noffH.initData.size +
+            noffH.uninitData.size;
+
+    heapEnd   = heapStart + UserHeapSize;
+    heapBreak = heapStart;
+
     numPages = divRoundUp(size, PageSize);
     size = numPages * PageSize;
 
-    ASSERT(numPages <= NumPhysPages);  // check we're not trying
+    // ASSERT(numPages <= NumPhysPages);  // check we're not trying
                                        // to run anything too big --
                                        // at least until we have
                                        // virtual memory
@@ -207,6 +220,24 @@ AddrSpace::AddrSpace(char *fileName) {
     //delete executable;
     return;
 }
+
+//Sbrk implementation (for assignment-6 malloc)
+int AddrSpace::Sbrk(int increment) {
+    int oldBreak = heapBreak;
+
+    if (oldBreak % 4 != 0) {
+        oldBreak += (4 - (oldBreak % 4));
+        heapBreak = oldBreak;
+    }
+    cout << "Sbrk called: inc=" << increment << " oldBreak=" << oldBreak << endl;
+    if (heapBreak + increment > heapEnd) {
+        return -1; // out of heap
+    }
+
+    heapBreak += increment;
+    return oldBreak;
+}
+
 
 //----------------------------------------------------------------------
 // AddrSpace::Execute

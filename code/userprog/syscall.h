@@ -60,6 +60,10 @@
 #define SC_ExecPipe 60
 #define SC_ReadPipe 61
 #define SC_WritePipe 62
+// inserted for assignment-6 malloc and free
+#define SC_Sbrk 63
+//#define SC_Mymalloc 64
+//#define SC_Myfree 65
 
 #ifndef IN_ASM
 
@@ -91,6 +95,11 @@ void Sleep2(int seconds);
 
 // added for assignment-4 pipe function
 int Pipe(int* readfd, int* writefd);
+
+//added for assignment-6 free function
+void* Sbrk(int increment);
+//void* my_malloc(uint32_t size);
+//void my_free(void* addr);
 
 int ReadNum();
 

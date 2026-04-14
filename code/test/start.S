@@ -82,6 +82,15 @@ Sleep2:
 	syscall
 	j	$31
 	.end Sleep2
+
+        .globl Sbrk 
+        .ent Sbrk
+
+Sbrk:
+        addiu $2,$0,SC_Sbrk
+        syscall
+        j      $31
+        .end Sbrk
         
         .globl Pipe
         .ent Pipe
